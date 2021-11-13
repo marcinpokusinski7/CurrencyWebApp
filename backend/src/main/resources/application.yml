@@ -1,0 +1,17 @@
+spring:
+  main:
+    banner-mode: off
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:7001/Compo
+    username: postgres
+    password: '081996'
+  sql:
+    init:
+      mode: always
+  jpa:
+    show-sql: true
+#    properties:
+#      hibernate:
+#        default_schema: Currencies
