@@ -3,6 +3,7 @@ package com.compo.currencyJobs;
 import com.compo.model.Currency;
 import com.compo.pojo.CurrencyTable;
 import com.compo.pojo.Rate;
+import com.compo.services.CurrencyService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;

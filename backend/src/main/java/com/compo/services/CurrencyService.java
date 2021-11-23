@@ -1,6 +1,7 @@
 package com.compo.services;
 
 import com.compo.model.Currency;
+import com.compo.repository.CurrencyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
