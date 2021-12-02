@@ -1,6 +1,6 @@
-package com.ktscrap
+package com.ktscrap.dto
 
-class Stock {
+class StockGpwDto {
     var name: String? = ""
     var rate: String = ""
     var change: String = ""
@@ -8,8 +8,4 @@ class Stock {
     var maxRate: String = ""
     var volumen: String = ""
     var quantityTransaction: String = ""
-
-
-
-
 }
