@@ -48,6 +48,7 @@ class StockScrap {
                 if (stockGpwDto.name.isNullOrBlank()) {
                     continue
                 } else {
+                    //TODO add method with db save and another one with date
                     println(
                         "Nazwa:${stockGpwDto.name} Kurs:${stockGpwDto.rate} Zmiana:${stockGpwDto.change}".replace(",", ".") +
                                 "  Ilość transakcji:${stockGpwDto.quantityTransaction}  Wolumen:${stockGpwDto.volumen}".replace(",", ".") +

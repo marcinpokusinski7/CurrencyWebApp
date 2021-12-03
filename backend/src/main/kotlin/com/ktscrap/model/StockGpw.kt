@@ -9,6 +9,7 @@ class StockGpw(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "stock_id", unique = true, nullable = false)
     var id: Long = 0,
+
     @Column(nullable = false)
     var name: String = "",
 
@@ -28,5 +29,8 @@ class StockGpw(
     var volumen: String = "",
 
     @Column(nullable = false)
-    var quantityTransaction: String = ""
+    var quantityTransaction: String = "",
+
+    @Column(nullable = false)
+    var stockDate_id: Int = 0
 )
