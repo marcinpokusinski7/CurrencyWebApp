@@ -1,6 +1,7 @@
 package com.ktscrap.model
 
 import javax.persistence.*
+import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
 
 @Entity
 @Table(name = "tb_gpw_stocks", schema = "currencies")
@@ -31,6 +32,4 @@ class StockGpw(
     @Column(nullable = false)
     var quantityTransaction: String = "",
 
-    @Column(nullable = false)
-    var stockDate_id: Int = 0
 )

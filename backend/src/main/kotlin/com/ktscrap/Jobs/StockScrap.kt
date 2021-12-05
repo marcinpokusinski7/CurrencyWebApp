@@ -1,8 +1,11 @@
 package com.ktscrap.Jobs
 
+import com.ktscrap.dto.StockDateDto
 import com.ktscrap.dto.StockGpwDto
+import com.ktscrap.model.StockDate
 import org.jsoup.Jsoup
 import org.springframework.stereotype.Component
+import java.lang.module.Configuration
 import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.annotation.PostConstruct
@@ -12,13 +15,13 @@ import kotlin.concurrent.timerTask
 @Component
 class StockScrap {
 
-    @PostConstruct
+ /*   @PostConstruct
     fun repeat() {
         Timer().schedule(timerTask {
             conn()
         },TimeUnit.SECONDS.convert(10, TimeUnit.SECONDS),10000)
-    }
-
+    }*/
+    @PostConstruct
     private fun conn() {
         val url = "https://www.bankier.pl/gielda/notowania/akcje"
         val filterOutput = "Obserwuj spółkę"
@@ -28,6 +31,7 @@ class StockScrap {
                 continue
             } else {
                 val stockGpwDto = StockGpwDto()
+                val stockDate = StockDateDto()
                 row.select("td:first-of-type a")
                     .map { col -> col.attr("title") }
                     .parallelStream()
@@ -45,15 +49,17 @@ class StockScrap {
                     .text()
                 stockGpwDto.maxRate = row.select("td:nth-of-type(8)")
                     .text()
+                stockDate.readDate = row.select("td:nth-of-type(10)")
+                    .text()
                 if (stockGpwDto.name.isNullOrBlank()) {
                     continue
                 } else {
-                    //TODO add method with db save and another one with date
-                    println(
-                        "Nazwa:${stockGpwDto.name} Kurs:${stockGpwDto.rate} Zmiana:${stockGpwDto.change}".replace(",", ".") +
-                                "  Ilość transakcji:${stockGpwDto.quantityTransaction}  Wolumen:${stockGpwDto.volumen}".replace(",", ".") +
-                                "  Min:${stockGpwDto.minRate} Max:${stockGpwDto.maxRate}".replace(",", ".")
-                    )
+                    //TODO add method with db save// add another method to read date just once
+                   var session = dbConn.transaction().currentSession
+                    println("Start new transaction: ${stockDate.readDate}")
+                    val stockDate = StockDate()
+                    session.beginTransaction()
+                    session.close()
                 }
             }
         }
