@@ -1,21 +1,19 @@
 package com.ktscrap.Jobs
 
-import com.ktscrap.dto.StockDateDto
-import com.ktscrap.dto.StockGpwDto
 import com.ktscrap.model.StockDate
+import com.ktscrap.model.StockGpw
 import org.jsoup.Jsoup
 import org.springframework.stereotype.Component
-import java.lang.module.Configuration
-import java.util.*
-import java.util.concurrent.TimeUnit
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import javax.annotation.PostConstruct
-import kotlin.concurrent.timerTask
 
 
 @Component
 class StockScrap {
+    private val session = dbConn.transaction().openSession()
 
- /*   @PostConstruct
+    /*   @PostConstruct
     fun repeat() {
         Timer().schedule(timerTask {
             conn()
@@ -23,6 +21,7 @@ class StockScrap {
     }*/
     @PostConstruct
     private fun conn() {
+        val session = dbConn.transaction().openSession()
         val url = "https://www.bankier.pl/gielda/notowania/akcje"
         val filterOutput = "Obserwuj spółkę"
         val doc = Jsoup.connect("$url").get()
@@ -30,38 +29,52 @@ class StockScrap {
             if (row.select("td:nth-of-type(1)").equals(String().isBlank())) {
                 continue
             } else {
-                val stockGpwDto = StockGpwDto()
-                val stockDate = StockDateDto()
+                val stockGpw = StockGpw()
                 row.select("td:first-of-type a")
                     .map { col -> col.attr("title") }
                     .parallelStream()
                     .filter { it != filterOutput }
-                    .forEach { stockGpwDto.name = it }
-                stockGpwDto.rate = row.select("td:nth-of-type(2)")
+                    .forEach { stockGpw.name = it }
+                stockGpw.rate = row.select("td:nth-of-type(2)")
                     .text()
-                stockGpwDto.change = row.select("td:nth-of-type(3)")
+                stockGpw.change = row.select("td:nth-of-type(3)")
                     .text()
-                stockGpwDto.quantityTransaction = row.select("td:nth-of-type(5)")
+                stockGpw.quantityTransaction = row.select("td:nth-of-type(5)")
                     .text()
-                stockGpwDto.volumen = row.select("td:nth-of-type(6)")
+                stockGpw.volumen = row.select("td:nth-of-type(6)")
                     .text()
-                stockGpwDto.minRate = row.select("td:nth-of-type(9)")
+                stockGpw.minRate = row.select("td:nth-of-type(9)")
                     .text()
-                stockGpwDto.maxRate = row.select("td:nth-of-type(8)")
+                stockGpw.maxRate = row.select("td:nth-of-type(8)")
                     .text()
-                stockDate.readDate = row.select("td:nth-of-type(10)")
-                    .text()
-                if (stockGpwDto.name.isNullOrBlank()) {
+                if (stockGpw.name.isNullOrBlank()) {
                     continue
                 } else {
-                    //TODO add method with db save// add another method to read date just once
-                   var session = dbConn.transaction().currentSession
-                    println("Start new transaction: ${stockDate.readDate}")
-                    val stockDate = StockDate()
-                    session.beginTransaction()
-                    session.close()
+                    itemsToDb(stockGpw, session)
                 }
             }
+        }
+    }
+
+    private fun itemsToDb(stockGpw: StockGpw, session: org.hibernate.Session) {
+        val itemDate = StockDate()
+        val currentDate = LocalDateTime.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        itemDate.readDate = currentDate.format(formatter)
+        addStocksToDb(stockGpw, itemDate, session)
+    }
+
+    private fun addStocksToDb(stockGpw: StockGpw, stockDate: StockDate, session: org.hibernate.Session) {
+        try {
+            val datefromdb = session.createNamedQuery("SELECT * FROM tb_stockdate ORDER BY ID DESC LIMIT 1")
+            if (datefromdb.toString().isNotEmpty() && !stockDate.equals(datefromdb)) {
+                session.save(stockDate)
+                session.save(stockGpw)
+            }
+
+            println("Name:${stockGpw.name} and ${stockDate.readDate} ")
+        } finally {
+            session.close()
         }
     }
 }
