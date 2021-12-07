@@ -4,32 +4,32 @@ import javax.persistence.*
 import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
 
 @Entity
-@Table(name = "tb_gpw_stocks", schema = "currencies")
+@Table(name = "tb_gpw_stock", schema = "currencies")
 class StockGpw(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "stock_id", unique = true, nullable = false)
-    var id: Long = 0,
+    var stock_id: Long = 0,
 
     @Column(nullable = false)
-    var name: String = "",
+    var stock_name: String = "",
 
     @Column(nullable = false)
-    var rate: String = "",
+    var stock_rate: String = "",
 
     @Column(nullable = false)
-    var change: String = "",
+    var stock_change: String = "",
 
     @Column(nullable = false)
-    var minRate: String = "",
+    var stock_min: String = "",
 
     @Column(nullable = false)
-    var maxRate: String = "",
+    var stock_max: String = "",
 
     @Column(nullable = false)
-    var volumen: String = "",
+    var stock_volume: String = "",
 
     @Column(nullable = false)
-    var quantityTransaction: String = "",
+    var stock_quantity: String = "",
 
-)
+    )

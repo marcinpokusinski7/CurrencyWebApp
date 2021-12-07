@@ -34,20 +34,20 @@ class StockScrap {
                     .map { col -> col.attr("title") }
                     .parallelStream()
                     .filter { it != filterOutput }
-                    .forEach { stockGpw.name = it }
-                stockGpw.rate = row.select("td:nth-of-type(2)")
+                    .forEach { stockGpw.stock_name = it }
+                stockGpw.stock_rate = row.select("td:nth-of-type(2)")
                     .text()
-                stockGpw.change = row.select("td:nth-of-type(3)")
+                stockGpw.stock_change = row.select("td:nth-of-type(3)")
                     .text()
-                stockGpw.quantityTransaction = row.select("td:nth-of-type(5)")
+                stockGpw.stock_quantity = row.select("td:nth-of-type(5)")
                     .text()
-                stockGpw.volumen = row.select("td:nth-of-type(6)")
+                stockGpw.stock_volume = row.select("td:nth-of-type(6)")
                     .text()
-                stockGpw.minRate = row.select("td:nth-of-type(9)")
+                stockGpw.stock_min = row.select("td:nth-of-type(9)")
                     .text()
-                stockGpw.maxRate = row.select("td:nth-of-type(8)")
+                stockGpw.stock_max = row.select("td:nth-of-type(8)")
                     .text()
-                if (stockGpw.name.isNullOrBlank()) {
+                if (stockGpw.stock_name.isNullOrBlank()) {
                     continue
                 } else {
                     itemsToDb(stockGpw, session)
@@ -60,19 +60,21 @@ class StockScrap {
         val itemDate = StockDate()
         val currentDate = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        itemDate.readDate = currentDate.format(formatter)
+        itemDate.read_Date = currentDate.format(formatter)
         addStocksToDb(stockGpw, itemDate, session)
     }
 
     private fun addStocksToDb(stockGpw: StockGpw, stockDate: StockDate, session: org.hibernate.Session) {
+        val createQuery = "SELECT read_date FROM currencies.tb_stockdate ORDER BY ID DESC LIMIT 1"
+        val query = session.createQuery(createQuery)
         try {
-            val datefromdb = session.createNamedQuery("SELECT * FROM tb_stockdate ORDER BY ID DESC LIMIT 1")
-            if (datefromdb.toString().isNotEmpty() && !stockDate.equals(datefromdb)) {
-                session.save(stockDate)
+           val queryResultDate = query.queryString
+            if (queryResultDate.toString().isNotEmpty() && !stockDate.equals(queryResultDate)) {
+                session.save(queryResultDate)
                 session.save(stockGpw)
+            }else{
+                println("Name:${stockGpw.stock_name} and ${stockDate.read_Date} ")
             }
-
-            println("Name:${stockGpw.name} and ${stockDate.readDate} ")
         } finally {
             session.close()
         }
