@@ -3,7 +3,7 @@ package com.ktscrap.model
 import javax.persistence.*
 
 @Entity
-@Table(name = "tb_stockdate", schema = "currencies")
+@Table(name = "tb_stockDate", schema = "currencies")
 class StockDate (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

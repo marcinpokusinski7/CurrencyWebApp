@@ -65,11 +65,11 @@ class StockScrap {
     }
 
     private fun addStocksToDb(stockGpw: StockGpw, stockDate: StockDate, session: org.hibernate.Session) {
-        val createQuery = "SELECT read_date FROM currencies.tb_stockdate ORDER BY ID DESC LIMIT 1"
+        val createQuery = "SELECT read_Date FROM StockDate ORDER BY id DESC"
         val query = session.createQuery(createQuery)
         try {
-           val queryResultDate = query.queryString
-            if (queryResultDate.toString().isNotEmpty() && !stockDate.equals(queryResultDate)) {
+           val queryResultDate = query.singleResult.toString()
+            if (queryResultDate.isNotEmpty() && !stockDate.equals(queryResultDate) || queryResultDate != "0") {
                 session.save(queryResultDate)
                 session.save(stockGpw)
             }else{
