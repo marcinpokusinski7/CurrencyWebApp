@@ -50,6 +50,7 @@ class StockScrap {
                 if (stockGpw.stock_name.isNullOrBlank()) {
                     continue
                 } else {
+                    print(stockGpw.stock_name)
                     itemsToDb(stockGpw, session)
                 }
             }
@@ -63,14 +64,16 @@ class StockScrap {
         itemDate.read_Date = currentDate.format(formatter)
         addStocksToDb(stockGpw, itemDate, session)
     }
-
+    //TODO fix query reading from db
     private fun addStocksToDb(stockGpw: StockGpw, stockDate: StockDate, session: org.hibernate.Session) {
         val createQuery = "SELECT read_Date FROM StockDate ORDER BY id DESC"
         val query = session.createQuery(createQuery)
         try {
            val queryResultDate = query.singleResult.toString()
             if (queryResultDate.isNotEmpty() && !stockDate.equals(queryResultDate) || queryResultDate != "0") {
-                session.save(queryResultDate)
+                print(stockGpw.stock_name)
+
+                stockGpw.date_id = stockDate
                 session.save(stockGpw)
             }else{
                 println("Name:${stockGpw.stock_name} and ${stockDate.read_Date} ")

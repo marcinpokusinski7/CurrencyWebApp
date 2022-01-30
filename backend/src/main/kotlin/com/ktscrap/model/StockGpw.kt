@@ -32,4 +32,7 @@ class StockGpw(
     @Column(nullable = false)
     var stock_quantity: String = "",
 
+    //TODO date id do dodania
+    @ManyToOne(cascade = [CascadeType.ALL])
+    var date_id: StockDate = StockDate(),
     )
