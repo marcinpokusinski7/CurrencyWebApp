@@ -2,7 +2,9 @@ package com.ktscrap.Jobs
 
 import com.ktscrap.model.StockDate
 import com.ktscrap.model.StockGpw
+import org.hibernate.Session
 import org.jsoup.Jsoup
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -12,7 +14,7 @@ import javax.annotation.PostConstruct
 @Component
 class StockScrap {
     private val session = dbConn.transaction().openSession()
-
+    private val logger = LoggerFactory.getLogger(javaClass)
     /*   @PostConstruct
     fun repeat() {
         Timer().schedule(timerTask {
@@ -25,6 +27,7 @@ class StockScrap {
         val url = "https://www.bankier.pl/gielda/notowania/akcje"
         val filterOutput = "Obserwuj spółkę"
         val doc = Jsoup.connect("$url").get()
+        val stockListContainer: ArrayList<StockGpw> = ArrayList()
         for (row in doc.select(".sortTable:first-of-type tr")) {
             if (row.select("td:nth-of-type(1)").equals(String().isBlank())) {
                 continue
@@ -50,37 +53,43 @@ class StockScrap {
                 if (stockGpw.stock_name.isNullOrBlank()) {
                     continue
                 } else {
-                    print(stockGpw.stock_name)
-                    itemsToDb(stockGpw, session)
+                    addDateToStockRecord(stockGpw, session)
+                    stockListContainer.add(stockGpw)
+                }
+            }
+        }
+        addStocksToDb(stockListContainer, session)
+        session.close()
+    }
+
+    //TODO fix query reading from db to read latest id
+    private fun addDateToStockRecord(stockGpw: StockGpw, session: org.hibernate.Session): StockGpw {
+        val getDateOfLastRecord = "SELECT read_date FROM StockDate where id = '0' ORDER BY id DESC"
+        val getDate = "SELECT * FROM StockDate ORDER BY id DESC LIMIT 1"
+        val query = session.createQuery(getDateOfLastRecord)
+        val stockDate = StockDate()
+        val currentDate = LocalDateTime.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        stockDate.read_date = currentDate.format(formatter)
+        val queryResultDate = query.singleResult.toString()
+
+        if (queryResultDate.isNotEmpty() && !stockDate.read_date.equals(queryResultDate) && queryResultDate.isNotEmpty()) {
+            stockGpw.stockDate = stockDate
+        }
+        return stockGpw
+    }
+
+    private fun addStocksToDb(stockGpwCollection: ArrayList<StockGpw>, session: Session) {
+
+        if(stockGpwCollection.isNotEmpty().or(false)){
+            session.use { session ->
+                for(stock in stockGpwCollection)
+                {
+                    session.save(stock)
                 }
             }
         }
     }
 
-    private fun itemsToDb(stockGpw: StockGpw, session: org.hibernate.Session) {
-        val itemDate = StockDate()
-        val currentDate = LocalDateTime.now()
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        itemDate.read_Date = currentDate.format(formatter)
-        addStocksToDb(stockGpw, itemDate, session)
-    }
-    //TODO fix query reading from db
-    private fun addStocksToDb(stockGpw: StockGpw, stockDate: StockDate, session: org.hibernate.Session) {
-        val createQuery = "SELECT read_Date FROM StockDate ORDER BY id DESC"
-        val query = session.createQuery(createQuery)
-        try {
-           val queryResultDate = query.singleResult.toString()
-            if (queryResultDate.isNotEmpty() && !stockDate.equals(queryResultDate) || queryResultDate != "0") {
-                print(stockGpw.stock_name)
-
-                stockGpw.date_id = stockDate
-                session.save(stockGpw)
-            }else{
-                println("Name:${stockGpw.stock_name} and ${stockDate.read_Date} ")
-            }
-        } finally {
-            session.close()
-        }
-    }
 }
 

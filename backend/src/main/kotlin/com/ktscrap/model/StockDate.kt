@@ -1,20 +1,21 @@
 package com.ktscrap.model
 
+import com.ktscrap.dto.StockDateDto
+import com.ktscrap.dto.StockGpwDto
 import javax.persistence.*
 
 @Entity
 @Table(name = "tb_stock_date", schema = "currencies")
-class StockDate (
+open class StockDate (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", unique = true, nullable = false)
-    var id: Long = 0,
+    @JvmField open var id: Long = 0,
 
     @Column(nullable = false)
-    var read_Date: String = "",
+    @JvmField open var read_date: String = "",
 
-    @OneToMany(cascade = [CascadeType.ALL],
-    orphanRemoval = true)
-    @JoinColumn(name = "date_id")
-    var dateCollection: MutableList<StockGpw> = ArrayList()
+    @OneToMany(targetEntity = StockGpw::class, cascade = [CascadeType.ALL])
+    @JoinColumn(name ="stock_id")
+    @JvmField open var listOfStocks: List<StockGpw> = ArrayList()
 )

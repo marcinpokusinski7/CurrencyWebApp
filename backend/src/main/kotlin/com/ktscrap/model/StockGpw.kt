@@ -3,36 +3,39 @@ package com.ktscrap.model
 import javax.persistence.*
 import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
 
+//JvmField is added because hibernate throwing error that
+//getters/setter cannot be final, and open is not enough in this situation
+
 @Entity
 @Table(name = "tb_gpw_stock", schema = "currencies")
-class StockGpw(
+open class StockGpw(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "stock_id", unique = true, nullable = false)
-    var stock_id: Long = 0,
+    @JvmField open var stock_id: Long = 0,
 
     @Column(nullable = false)
-    var stock_name: String = "",
+    @JvmField open var stock_name: String = "",
 
     @Column(nullable = false)
-    var stock_rate: String = "",
+    @JvmField open var stock_rate: String = "",
 
     @Column(nullable = false)
-    var stock_change: String = "",
+    @JvmField open var stock_change: String = "",
 
     @Column(nullable = false)
-    var stock_min: String = "",
+    @JvmField open var stock_min: String = "",
 
     @Column(nullable = false)
-    var stock_max: String = "",
+    @JvmField open var stock_max: String = "",
 
     @Column(nullable = false)
-    var stock_volume: String = "",
+    @JvmField open var stock_volume: String = "",
 
     @Column(nullable = false)
-    var stock_quantity: String = "",
+    @JvmField open var stock_quantity: String = "",
 
-    //TODO date id do dodania
-    @ManyToOne(cascade = [CascadeType.ALL])
-    var date_id: StockDate = StockDate(),
+   @ManyToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    @JoinColumn(name = "id")
+    @JvmField var stockDate: StockDate? = null
     )
