@@ -75,6 +75,13 @@ class StockScrap {
 
         if (queryResultDate.isNotEmpty() && !stockDate.read_date.equals(queryResultDate) && queryResultDate.isNotEmpty()) {
             stockGpw.stockDate = stockDate
+        } else if(stockDate.read_date.equals(queryResultDate)){
+            val stockDateItem: StockDate
+            val queryResultWithLatestDate = session.createQuery(getDate)
+            stockDateItem = queryResultWithLatestDate.singleResult as StockDate
+            if(stockDateItem.read_date.isNotEmpty()){
+                stockGpw.stockDate = stockDateItem
+            }
         } else{
             logger.info("Problem with retrieving data in StockScrap date find")
         }
