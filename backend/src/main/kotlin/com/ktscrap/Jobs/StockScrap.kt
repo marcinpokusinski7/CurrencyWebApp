@@ -75,6 +75,8 @@ class StockScrap {
 
         if (queryResultDate.isNotEmpty() && !stockDate.read_date.equals(queryResultDate) && queryResultDate.isNotEmpty()) {
             stockGpw.stockDate = stockDate
+        } else{
+            logger.info("Problem with retrieving data in StockScrap date find")
         }
         return stockGpw
     }
