@@ -65,7 +65,7 @@ class StockScrap {
     //TODO fix query reading from db to read latest id
     private fun addDateToStockRecord(stockGpw: StockGpw, session: org.hibernate.Session): StockGpw {
         val getDateOfLastRecord = "SELECT read_date FROM StockDate where id = '0' ORDER BY id DESC"
-        val getDate = "SELECT * FROM tb_stock_date ORDER BY id DESC"
+        val getDate = "SELECT read_date FROM StockDate ORDER BY id DESC"
         val query = session.createQuery(getDateOfLastRecord)
         val stockDate = StockDate()
         val currentDate = LocalDateTime.now()
@@ -73,7 +73,7 @@ class StockScrap {
         stockDate.read_date = currentDate.format(formatter)
         val queryResultDate = query.singleResult.toString()
 
-        //TODO fix query to retrieve an object
+        //TODO fix query to retrieve an object it is possible to do an converter of stockdate by properties
         if (queryResultDate.isNotEmpty() && !stockDate.read_date.equals(queryResultDate) && queryResultDate.isNotEmpty()) {
             stockGpw.stockDate = stockDate
         } else if(stockDate.read_date.equals(queryResultDate)){
