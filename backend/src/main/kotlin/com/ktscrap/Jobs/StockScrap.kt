@@ -15,6 +15,7 @@ import javax.annotation.PostConstruct
 class StockScrap {
     private val session = dbConn.transaction().openSession()
     private val logger = LoggerFactory.getLogger(javaClass)
+
     /*   @PostConstruct
     fun repeat() {
         Timer().schedule(timerTask {
@@ -64,8 +65,11 @@ class StockScrap {
 
     //TODO fix query reading from db to read latest id
     private fun addDateToStockRecord(stockGpw: StockGpw, session: org.hibernate.Session): StockGpw {
-        val getDateOfLastRecord = "SELECT read_date FROM StockDate where id = '0' ORDER BY id DESC"
-        val getDate = "SELECT read_date FROM StockDate ORDER BY id DESC"
+        val getDateOfLastRecord =
+            "SELECT read_date FROM StockDate where id = '0' ORDER BY id DESC"
+        val getDate =
+            "SELECT id FROM StockDate where id = '0' ORDER BY id DESC"//"SELECT id, read_date FROM StockDate ORDER BY id DESC"
+
         val query = session.createQuery(getDateOfLastRecord)
         val stockDate = StockDate()
         val currentDate = LocalDateTime.now()
@@ -74,26 +78,26 @@ class StockScrap {
         val queryResultDate = query.singleResult.toString()
 
         //TODO fix query to retrieve an object it is possible to do an converter of stockdate by properties
-        if (queryResultDate.isNotEmpty() && !stockDate.read_date.equals(queryResultDate) && queryResultDate.isNotEmpty()) {
+        if (queryResultDate.isNotEmpty() && !stockDate.read_date.equals(queryResultDate)) {
             stockGpw.stockDate = stockDate
-        } else if(stockDate.read_date.equals(queryResultDate)){
-            val stockDateItem: StockDate
+        } else if (stockDate.read_date.equals("2022-02-24")) { //TODO IF latest date is the same dont add
+            val stockDateId : Long
             val queryResultWithLatestDate = session.createQuery(getDate)
-            stockDateItem = queryResultWithLatestDate.singleResult as StockDate
-            if(stockDateItem.read_date.isNotEmpty()){
+            stockDateId = queryResultWithLatestDate.singleResult as Long
+            val stockDateItem = session.get(StockDate::class.java, stockDateId)
+            if (stockDateItem.read_date.isNotEmpty()) {
                 stockGpw.stockDate = stockDateItem
             }
-        } else{
+        } else {
             logger.info("Problem with retrieving data in StockScrap date find")
         }
         return stockGpw
     }
 
     private fun addStocksToDb(stockGpwCollection: ArrayList<StockGpw>, session: Session) {
-        if(stockGpwCollection.isNotEmpty().or(false)){
+        if (stockGpwCollection.isNotEmpty().or(false)) {
             session.use { session ->
-                for(stock in stockGpwCollection)
-                {
+                for (stock in stockGpwCollection) {
                     session.save(stock)
                 }
             }

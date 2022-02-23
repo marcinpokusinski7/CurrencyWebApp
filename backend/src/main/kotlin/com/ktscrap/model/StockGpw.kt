@@ -1,5 +1,6 @@
 package com.ktscrap.model
 
+import lombok.Builder
 import javax.persistence.*
 import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
 
