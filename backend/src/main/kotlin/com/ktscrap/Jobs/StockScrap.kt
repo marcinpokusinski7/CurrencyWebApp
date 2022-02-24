@@ -98,6 +98,26 @@ class StockScrap {
             }
         }
     }
+    //TODO fix query to retrieve an object it is possible to check last added date
+    private fun prepareDateRecord(session: Session) {
+        val getLastDate =
+            "SELECT read_date FROM StockDate where id = '0' ORDER BY id DESC"
+
+        val query = session.createQuery(getLastDate)
+        val stockDate = StockDate()
+        val currentDate = LocalDateTime.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        stockDate.read_date = currentDate.format(formatter)
+        val queryResultDate = query.singleResult.toString()
+
+        if (queryResultDate.isNotEmpty() && stockDate.read_date != queryResultDate) {
+            addDateToDb(stockDate, session)
+        } else {
+            logger.info("Problem with retrieving data in StockScrap date find")
+        }
+    }
+
+
 
 
 }
