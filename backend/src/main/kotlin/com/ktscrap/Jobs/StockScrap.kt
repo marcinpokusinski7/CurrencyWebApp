@@ -117,7 +117,13 @@ class StockScrap {
         }
     }
 
-
+    private fun addDateToDb(stockDate: StockDate, session: Session) {
+        if (stockDate.read_date.isNotEmpty()) {
+            session.use { session ->
+                session.save(stockDate)
+            }
+        }
+    }
 
 
 }
