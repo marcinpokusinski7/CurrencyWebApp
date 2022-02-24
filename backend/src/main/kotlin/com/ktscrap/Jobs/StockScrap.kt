@@ -29,6 +29,8 @@ class StockScrap {
         val filterOutput = "Obserwuj spółkę"
         val doc = Jsoup.connect("$url").get()
         val stockListContainer: ArrayList<StockGpw> = ArrayList()
+        prepareDateRecord(session)
+
         for (row in doc.select(".sortTable:first-of-type tr")) {
             if (row.select("td:nth-of-type(1)").equals(String().isBlank())) {
                 continue
@@ -54,7 +56,7 @@ class StockScrap {
                 if (stockGpw.stock_name.isNullOrBlank()) {
                     continue
                 } else {
-                    addDateToStockRecord(stockGpw, session)
+                    prepareStockRecord(stockGpw, session)
                     stockListContainer.add(stockGpw)
                 }
             }
@@ -63,32 +65,25 @@ class StockScrap {
         session.close()
     }
 
-    //TODO fix query reading from db to read latest id
-    private fun addDateToStockRecord(stockGpw: StockGpw, session: org.hibernate.Session): StockGpw {
-        val getDateOfLastRecord =
+
+    //TODO add adding stock to db, get last added date, think about structure of db
+    private fun prepareStockRecord(stockGpw: StockGpw, session: Session): StockGpw {
+        val getLastDate =
             "SELECT read_date FROM StockDate where id = '0' ORDER BY id DESC"
-        val getDate =
-            "SELECT id FROM StockDate where id = '0' ORDER BY id DESC"//"SELECT id, read_date FROM StockDate ORDER BY id DESC"
-
-        val query = session.createQuery(getDateOfLastRecord)
-        val stockDate = StockDate()
-        val currentDate = LocalDateTime.now()
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        stockDate.read_date = currentDate.format(formatter)
+        val query = session.createQuery(getLastDate)
         val queryResultDate = query.singleResult.toString()
-
         //TODO fix query to retrieve an object it is possible to do an converter of stockdate by properties
-        if (queryResultDate.isNotEmpty() && !stockDate.read_date.equals(queryResultDate)) {
-            stockGpw.stockDate = stockDate
-        } else if (stockDate.read_date.equals("2022-02-24")) { //TODO IF latest date is the same dont add
-            val stockDateId : Long
+        if (queryResultDate.isNotEmpty() {
+            //stockGpw.date_id = queryResultDate
+        }/* else if (stockDate.read_date == "2022-02-24") { //TODO IF latest date is the same dont add
+            val stockDateId: Long
             val queryResultWithLatestDate = session.createQuery(getDate)
             stockDateId = queryResultWithLatestDate.singleResult as Long
             val stockDateItem = session.get(StockDate::class.java, stockDateId)
             if (stockDateItem.read_date.isNotEmpty()) {
                 stockGpw.stockDate = stockDateItem
             }
-        } else {
+        }*/ else {
             logger.info("Problem with retrieving data in StockScrap date find")
         }
         return stockGpw
@@ -103,6 +98,7 @@ class StockScrap {
             }
         }
     }
+
 
 }
 

@@ -1,7 +1,5 @@
 package com.ktscrap.model
 
-import com.ktscrap.dto.StockDateDto
-import com.ktscrap.dto.StockGpwDto
 import javax.persistence.*
 
 @Entity
