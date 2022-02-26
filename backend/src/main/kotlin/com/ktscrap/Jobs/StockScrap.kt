@@ -30,7 +30,7 @@ class StockScrap {
         val doc = Jsoup.connect("$url").get()
         val stockListContainer: ArrayList<StockGpw> = ArrayList()
         prepareDateRecord(session)
-
+        //TODO maybe isolate to another method
         for (row in doc.select(".sortTable:first-of-type tr")) {
             if (row.select("td:nth-of-type(1)").equals(String().isBlank())) {
                 continue
@@ -66,16 +66,18 @@ class StockScrap {
     }
 
 
-    //TODO add adding stock to db, get last added date, think about structure of db
+    //TODO add adding stock to db, get last added date, think about structure of db as a list
     private fun prepareStockRecord(stockGpw: StockGpw, session: Session): StockGpw {
         val getLastDate =
             "SELECT read_date FROM StockDate where id = '0' ORDER BY id DESC"
         val query = session.createQuery(getLastDate)
         val queryResultDate = query.singleResult.toString()
+        val stockReadDate = StockDate()
+        stockReadDate.id = queryResultDate as Long
         //TODO fix query to retrieve an object it is possible to do an converter of stockdate by properties
-        if (queryResultDate.isNotEmpty() {
-            //stockGpw.date_id = queryResultDate
-        }/* else if (stockDate.read_date == "2022-02-24") { //TODO IF latest date is the same dont add
+        if (queryResultDate.isNotEmpty()){
+        stockGpw.stockDate = session.get(stockReadDate.toString(), stockReadDate.id) as StockDate?
+        /* else if (stockDate.read_date == "2022-02-24") { //TODO IF latest date is the same dont add
             val stockDateId: Long
             val queryResultWithLatestDate = session.createQuery(getDate)
             stockDateId = queryResultWithLatestDate.singleResult as Long
@@ -83,7 +85,8 @@ class StockScrap {
             if (stockDateItem.read_date.isNotEmpty()) {
                 stockGpw.stockDate = stockDateItem
             }
-        }*/ else {
+        }*/
+        } else {
             logger.info("Problem with retrieving data in StockScrap date find")
         }
         return stockGpw
