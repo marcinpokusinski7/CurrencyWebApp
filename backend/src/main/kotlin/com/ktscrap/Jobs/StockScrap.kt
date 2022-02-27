@@ -35,7 +35,7 @@ class StockScrap {
             if (row.select("td:nth-of-type(1)").equals(String().isBlank())) {
                 continue
             } else {
-                val stockGpw = StockGpw()
+                var stockGpw = StockGpw()
                 row.select("td:first-of-type a")
                     .map { col -> col.attr("title") }
                     .parallelStream()
@@ -56,8 +56,9 @@ class StockScrap {
                 if (stockGpw.stock_name.isNullOrBlank()) {
                     continue
                 } else {
-                    prepareStockRecord(stockGpw, session)
+                    stockGpw = prepareStockRecord(stockGpw, session)
                     stockListContainer.add(stockGpw)
+
                 }
             }
         }
@@ -69,7 +70,8 @@ class StockScrap {
     //TODO add adding stock to db, get last added date, think about structure of db as a list
     private fun prepareStockRecord(stockGpw: StockGpw, session: Session): StockGpw {
         val getLastDate =
-            "SELECT read_date FROM StockDate where id = '0' ORDER BY id DESC"
+            "SELECT id, read_date FROM StockDate ORDER BY id DESC"
+
         val query = session.createQuery(getLastDate)
         val queryResultDate = query.singleResult.toString()
         val stockReadDate = StockDate()
@@ -104,9 +106,10 @@ class StockScrap {
     //TODO fix query to retrieve an object it is possible to check last added date
     private fun prepareDateRecord(session: Session) {
         val getLastDate =
-            "SELECT read_date FROM StockDate where id = '0' ORDER BY id DESC"
+            "SELECT read_date FROM StockDate ORDER BY id DESC"
 
         val query = session.createQuery(getLastDate)
+        query.maxResults = 1
         val stockDate = StockDate()
         val currentDate = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -116,7 +119,7 @@ class StockScrap {
         if (queryResultDate.isNotEmpty() && stockDate.read_date != queryResultDate) {
             addDateToDb(stockDate, session)
         } else {
-            logger.info("Problem with retrieving data in StockScrap date find")
+            logger.info("Problem with retrieving data or date already exists")
         }
     }
 

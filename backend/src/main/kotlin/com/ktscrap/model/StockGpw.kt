@@ -38,5 +38,5 @@ open class StockGpw(
 
     @ManyToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     @JoinColumn(name = "id")
-    @JvmField var stockDate: StockDate? = null
+    @JvmField var stockid: StockDate? = null
     )
