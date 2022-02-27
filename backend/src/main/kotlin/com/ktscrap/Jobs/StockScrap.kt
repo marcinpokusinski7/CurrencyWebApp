@@ -73,6 +73,7 @@ class StockScrap {
             "SELECT id, read_date FROM StockDate ORDER BY id DESC"
 
         val query = session.createQuery(getLastDate)
+        query.maxResults = 1
         val queryResultDate = query.singleResult.toString()
         val stockReadDate = StockDate()
         stockReadDate.read_date = queryResultDate
