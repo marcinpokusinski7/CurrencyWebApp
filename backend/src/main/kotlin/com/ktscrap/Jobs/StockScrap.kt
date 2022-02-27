@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import javax.annotation.PostConstruct
+import javax.management.remote.NotificationResult
+import javax.persistence.NoResultException
 
 
 @Component
@@ -78,17 +80,17 @@ class StockScrap {
         val stockReadDate = StockDate()
         stockReadDate.read_date = queryResultDate
         //TODO fix query to retrieve an object it is possible to do an converter of stockdate by properties
-        if (queryResultDate.isNotEmpty()){
-        stockGpw.stockDate = stockReadDate
-        /* else if (stockDate.read_date == "2022-02-24") { //TODO IF latest date is the same dont add
-            val stockDateId: Long
-            val queryResultWithLatestDate = session.createQuery(getDate)
-            stockDateId = queryResultWithLatestDate.singleResult as Long
-            val stockDateItem = session.get(StockDate::class.java, stockDateId)
-            if (stockDateItem.read_date.isNotEmpty()) {
-                stockGpw.stockDate = stockDateItem
-            }
-        }*/
+        if (queryResultDate.isNotEmpty()) {
+            stockGpw.stockDate = stockReadDate
+            /* else if (stockDate.read_date == "2022-02-24") { //TODO IF latest date is the same dont add
+                val stockDateId: Long
+                val queryResultWithLatestDate = session.createQuery(getDate)
+                stockDateId = queryResultWithLatestDate.singleResult as Long
+                val stockDateItem = session.get(StockDate::class.java, stockDateId)
+                if (stockDateItem.read_date.isNotEmpty()) {
+                    stockGpw.stockDate = stockDateItem
+                }
+            }*/
         } else {
             logger.info("Problem with retrieving data in StockScrap date find")
         }
@@ -104,23 +106,28 @@ class StockScrap {
             }
         }
     }
+
     //TODO fix query to retrieve an object it is possible to check last added date
     private fun prepareDateRecord(session: Session) {
         val getLastDate =
             "SELECT read_date FROM StockDate ORDER BY id DESC"
 
         val query = session.createQuery(getLastDate)
+        val queryResultDate: String
         query.maxResults = 1
         val stockDate = StockDate()
         val currentDate = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         stockDate.read_date = currentDate.format(formatter)
-        val queryResultDate = query.singleResult.toString()
+        try {
+            queryResultDate = query.singleResult.toString()
+            if (queryResultDate.isNotEmpty() && stockDate.read_date != queryResultDate) {
+                addDateToDb(stockDate, session)
+            }  else{
+                logger.info("Problem with retrieving data or date already exists")
+            }
+        } catch (e: NoResultException) {
 
-        if (queryResultDate.isNotEmpty() && stockDate.read_date != queryResultDate) {
-            addDateToDb(stockDate, session)
-        } else {
-            logger.info("Problem with retrieving data or date already exists")
         }
     }
 
