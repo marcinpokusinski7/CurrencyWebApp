@@ -127,7 +127,9 @@ class StockScrap {
                 logger.info("Problem with retrieving data or date already exists")
             }
         } catch (e: NoResultException) {
-
+            if(stockDate.read_date.isNotEmpty()){
+                addDateToDb(stockDate, session)
+            }
         }
     }
 
