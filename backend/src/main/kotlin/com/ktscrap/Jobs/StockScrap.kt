@@ -6,6 +6,7 @@ import org.hibernate.Session
 import org.jsoup.Jsoup
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import javax.annotation.PostConstruct
@@ -78,13 +79,15 @@ class StockScrap {
         query.maxResults = 1
         val queryResultDate =
             session.get(StockDate::class.java, query.singleResult as Long) as StockDate//query.singleResult as StockDate
-        val stockReadDate: StockDate = queryResultDate
-        //TODO fix query to retrieve an object it is possible to do an converter of stockdate by properties
+        val stockDate = LocalDateTime.now()
+        val formatted = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val formattedStockDate = stockDate.format(formatted)
+        //TODO adjust to not add unexpected ids
         if (queryResultDate.read_date.isNotEmpty()) {
-            if (queryResultDate.read_date == stockReadDate.read_date) {
-                stockGpw.stockDate?.id = queryResultDate.id
+            if (queryResultDate.read_date == formattedStockDate) {
+                stockGpw.stockDate = queryResultDate
             } else {
-                stockGpw.stockDate = stockReadDate
+                stockGpw.stockDate = queryResultDate
             }
             /* else if (stockDate.read_date == "2022-02-24") { //TODO IF latest date is the same dont add
                 val stockDateId: Long
