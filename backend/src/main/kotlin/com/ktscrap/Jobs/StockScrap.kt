@@ -72,17 +72,18 @@ class StockScrap {
     //TODO add adding stock to db, get last added date, think about structure of db as a list
     private fun prepareStockRecord(stockGpw: StockGpw, session: Session): StockGpw {
         val getLastDate =
-            "SELECT id, read_date FROM StockDate ORDER BY id DESC"
+            "SELECT id FROM StockDate ORDER BY id DESC"
 
         val query = session.createQuery(getLastDate)
         query.maxResults = 1
-        val queryResultDate = query.singleResult as StockDate
+        val queryResultDate =
+            session.get(StockDate::class.java, query.singleResult as Long) as StockDate//query.singleResult as StockDate
         val stockReadDate: StockDate = queryResultDate
         //TODO fix query to retrieve an object it is possible to do an converter of stockdate by properties
         if (queryResultDate.read_date.isNotEmpty()) {
-            if(queryResultDate.read_date == stockReadDate.read_date){
+            if (queryResultDate.read_date == stockReadDate.read_date) {
                 stockGpw.stockDate?.id = queryResultDate.id
-            }else{
+            } else {
                 stockGpw.stockDate = stockReadDate
             }
             /* else if (stockDate.read_date == "2022-02-24") { //TODO IF latest date is the same dont add
@@ -126,12 +127,12 @@ class StockScrap {
             queryResultDate = query.singleResult.toString()
             if (queryResultDate.isNotEmpty() && stockDate.read_date != queryResultDate) {
                 addDateToDb(stockDate, session)
-            }  else{
+            } else {
                 logger.info("Problem with retrieving data or date already exists")
             }
         } catch (e: NoResultException) {
             logger.info("Query result is empty, no records found")
-            if(stockDate.read_date.isNotEmpty()){
+            if (stockDate.read_date.isNotEmpty()) {
                 addDateToDb(stockDate, session)
             }
         }
