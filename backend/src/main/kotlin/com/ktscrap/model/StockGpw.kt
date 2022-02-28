@@ -36,7 +36,7 @@ open class StockGpw(
     @Column(nullable = false)
     @JvmField open var stock_quantity: String = "",
 
-    @ManyToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    @OneToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     @JoinColumn(name = "id")
     @JvmField var stockDate: StockDate? = null
     )

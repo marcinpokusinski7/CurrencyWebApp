@@ -87,17 +87,8 @@ class StockScrap {
             if (queryResultDate.read_date == formattedStockDate) {
                 stockGpw.stockDate = queryResultDate
             } else {
-                stockGpw.stockDate = queryResultDate
+                stockGpw.stockDate?.read_date = formattedStockDate
             }
-            /* else if (stockDate.read_date == "2022-02-24") { //TODO IF latest date is the same dont add
-                val stockDateId: Long
-                val queryResultWithLatestDate = session.createQuery(getDate)
-                stockDateId = queryResultWithLatestDate.singleResult as Long
-                val stockDateItem = session.get(StockDate::class.java, stockDateId)
-                if (stockDateItem.read_date.isNotEmpty()) {
-                    stockGpw.stockDate = stockDateItem
-                }
-            }*/
         } else {
             logger.info("Problem with retrieving data in StockScrap date find")
         }
