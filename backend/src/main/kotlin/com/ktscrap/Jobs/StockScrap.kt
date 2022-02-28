@@ -76,12 +76,15 @@ class StockScrap {
 
         val query = session.createQuery(getLastDate)
         query.maxResults = 1
-        val queryResultDate = query.singleResult.toString()
-        val stockReadDate = StockDate()
-        stockReadDate.read_date = queryResultDate
+        val queryResultDate = query.singleResult as StockDate
+        val stockReadDate: StockDate = queryResultDate
         //TODO fix query to retrieve an object it is possible to do an converter of stockdate by properties
-        if (queryResultDate.isNotEmpty()) {
-            stockGpw.stockDate = stockReadDate
+        if (queryResultDate.read_date.isNotEmpty()) {
+            if(queryResultDate.read_date == stockReadDate.read_date){
+                stockGpw.stockDate?.id = queryResultDate.id
+            }else{
+                stockGpw.stockDate = stockReadDate
+            }
             /* else if (stockDate.read_date == "2022-02-24") { //TODO IF latest date is the same dont add
                 val stockDateId: Long
                 val queryResultWithLatestDate = session.createQuery(getDate)
@@ -127,6 +130,7 @@ class StockScrap {
                 logger.info("Problem with retrieving data or date already exists")
             }
         } catch (e: NoResultException) {
+            logger.info("Query result is empty, no records found")
             if(stockDate.read_date.isNotEmpty()){
                 addDateToDb(stockDate, session)
             }
