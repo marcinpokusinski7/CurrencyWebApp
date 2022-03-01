@@ -70,7 +70,7 @@ class StockScrap {
     }
 
 
-    //TODO add adding stock to db, get last added date, think about structure of db as a list
+    //TODO add day of week and if it is any holiday
     private fun prepareStockRecord(stockGpw: StockGpw, session: Session): StockGpw {
         val getLastDate =
             "SELECT id FROM StockDate ORDER BY id DESC"
@@ -82,7 +82,7 @@ class StockScrap {
         val stockDate = LocalDateTime.now()
         val formatted = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val formattedStockDate = stockDate.format(formatted)
-        //TODO adjust to not add unexpected ids
+
         if (queryResultDate.read_date.isNotEmpty()) {
             if (queryResultDate.read_date == formattedStockDate) {
                 stockGpw.stockDate = queryResultDate
@@ -105,7 +105,7 @@ class StockScrap {
         }
     }
 
-    //TODO fix query to retrieve an object it is possible to check last added date
+
     private fun prepareDateRecord(session: Session) {
         val getLastDate =
             "SELECT read_date FROM StockDate ORDER BY id DESC"
