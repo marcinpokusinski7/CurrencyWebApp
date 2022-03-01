@@ -6,12 +6,9 @@ import org.hibernate.Session
 import org.jsoup.Jsoup
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
-import java.time.DayOfWeek
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import javax.annotation.PostConstruct
-import javax.management.remote.NotificationResult
 import javax.persistence.NoResultException
 
 
@@ -71,7 +68,6 @@ class StockScrap {
     }
 
 
-    //TODO add day of week and if it is any holiday
     private fun prepareStockRecord(stockGpw: StockGpw, session: Session): StockGpw {
         val getLastDate =
             "SELECT id FROM StockDate ORDER BY id DESC"
@@ -107,6 +103,7 @@ class StockScrap {
     }
 
     //TODO add day of week, add if holiday and what holiday
+    //TODO additionally check if try catch works properly after deleting records in db and inserting again
     private fun prepareDateRecord(session: Session) {
         val getLastDate =
             "SELECT read_date FROM StockDate ORDER BY id DESC"
@@ -135,7 +132,7 @@ class StockScrap {
             }
         }
     }
-
+    //TODO Check if enum with holidays is there
     private fun checkIsHolidays(currDate: LocalDateTime): Boolean {
         if(currDate.dayOfWeek.toString() == "Sunday"
             || currDate.dayOfWeek.toString() == "Saturday"){

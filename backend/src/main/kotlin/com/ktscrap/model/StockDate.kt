@@ -5,7 +5,7 @@ import javax.persistence.*
 
 @Entity
 @Table(name = "tb_stock_date", schema = "currencies")
-open class StockDate (
+open class StockDate(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", unique = true, nullable = false)
@@ -15,7 +15,7 @@ open class StockDate (
     @JvmField open var read_date: String = "",
 
     @Column(nullable = false)
-    @JvmField open var dayOfWeek: DayOfWeek = DayOfWeek.valueOf(""),
+    @JvmField open var dayOfWeek: DayOfWeek? = null,
 
     @Column(nullable = false)
     @JvmField open var isHoliday: Boolean = false
