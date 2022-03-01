@@ -9,16 +9,15 @@ open class StockDate (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", unique = true, nullable = false)
-    @JvmField open var id: Long,
+    @JvmField open var id: Long = 0,
 
     @Column(nullable = false)
-    @JvmField open var read_date: String,
+    @JvmField open var read_date: String = "",
 
     @Column(nullable = false)
-    @JvmField open var dayOfWeek: DayOfWeek,
+    @JvmField open var dayOfWeek: DayOfWeek = DayOfWeek.valueOf(""),
 
     @Column(nullable = false)
-    @JvmField open var isHoliday: Boolean
+    @JvmField open var isHoliday: Boolean = false
 
-    //TODO add day of week, add if holiday and what holiday
 )

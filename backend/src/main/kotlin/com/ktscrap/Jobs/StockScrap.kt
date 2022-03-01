@@ -105,7 +105,7 @@ class StockScrap {
         }
     }
 
-
+    //TODO add day of week, add if holiday and what holiday
     private fun prepareDateRecord(session: Session) {
         val getLastDate =
             "SELECT read_date FROM StockDate ORDER BY id DESC"
