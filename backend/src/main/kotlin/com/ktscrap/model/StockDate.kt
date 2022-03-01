@@ -13,7 +13,7 @@ open class StockDate (
     @Column(nullable = false)
     @JvmField open var read_date: String = "",
 
-    @OneToMany(targetEntity = StockGpw::class, cascade = [CascadeType.ALL])
+   /* @OneToMany(targetEntity = StockGpw::class, cascade = [CascadeType.ALL])
     @JoinColumn(name ="stock_id")
-    @JvmField open var listOfStocks: List<StockGpw> = ArrayList()
+    @JvmField open var listOfStocks: List<StockGpw> = ArrayList()*/
 )
