@@ -6,6 +6,7 @@ import org.hibernate.Session
 import org.jsoup.Jsoup
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -117,6 +118,9 @@ class StockScrap {
         val currentDate = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         stockDate.read_date = currentDate.format(formatter)
+        stockDate.dayOfWeek = currentDate.dayOfWeek
+        stockDate.isHoliday = checkIsHolidays(currentDate)
+
         try {
             queryResultDate = query.singleResult.toString()
             if (queryResultDate.isNotEmpty() && stockDate.read_date != queryResultDate) {
@@ -130,6 +134,14 @@ class StockScrap {
                 addDateToDb(stockDate, session)
             }
         }
+    }
+
+    private fun checkIsHolidays(currDate: LocalDateTime): Boolean {
+        if(currDate.dayOfWeek.toString() == "Sunday"
+            || currDate.dayOfWeek.toString() == "Saturday"){
+            return true
+        }
+        return false
     }
 
     private fun addDateToDb(stockDate: StockDate, session: Session) {
