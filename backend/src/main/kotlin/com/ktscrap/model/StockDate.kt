@@ -18,6 +18,9 @@ open class StockDate(
     @JvmField open var dayOfWeek: DayOfWeek? = null,
 
     @Column(nullable = false)
-    @JvmField open var isHoliday: Boolean = false
+    @JvmField open var isHoliday: Boolean = false,
+
+    @Column(nullable = false)
+    @JvmField open var isGPWOpen: Boolean = false
 
 )
