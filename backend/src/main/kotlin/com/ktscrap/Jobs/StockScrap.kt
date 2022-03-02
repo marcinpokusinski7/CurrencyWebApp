@@ -132,13 +132,24 @@ class StockScrap {
             }
         }
     }
+
     //TODO Check if enum with holidays is there
     private fun checkIsHolidays(currDate: LocalDateTime): Boolean {
-        if(currDate.dayOfWeek.toString() == "Sunday"
-            || currDate.dayOfWeek.toString() == "Saturday"){
+        if (currDate.dayOfWeek.toString() == "Sunday"
+            || currDate.dayOfWeek.toString() == "Saturday"
+        ) {
             return true
         }
         return false
+    }
+
+    private fun checkIsGPWOpen(currDate: LocalDateTime, stockDate: StockDate): Boolean {
+        when (currDate.dayOfYear) {
+            6 -> stockDate.isGPWOpen = true
+            105 -> stockDate.isGPWOpen = true
+        }
+
+        return stockDate.isGPWOpen
     }
 
     private fun addDateToDb(stockDate: StockDate, session: Session) {
