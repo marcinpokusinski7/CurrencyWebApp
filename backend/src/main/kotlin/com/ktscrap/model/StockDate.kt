@@ -21,6 +21,7 @@ open class StockDate(
     @JvmField open var isHoliday: Boolean = false,
 
     @Column(nullable = false)
-    @JvmField open var isGPWOpen: Boolean = true
+    @JvmField open var isGPWOpen: Boolean = true,
+
 
 )
