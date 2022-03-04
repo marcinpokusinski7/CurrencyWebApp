@@ -142,6 +142,7 @@ class StockScrap {
         }
         return false
     }
+
     //https://www.gpw.pl/szczegoly-sesji/#bez-sesji get dates from site, and create enums of month
     private fun checkIsGPWOpen(currDate: LocalDateTime, stockDate: StockDate): Boolean {
         if(checkIsWeekend(LocalDateTime.now())){
@@ -149,11 +150,9 @@ class StockScrap {
         }else {//if gpw is not open then return gpw open false
             when (currDate.dayOfYear) {
                 6 -> stockDate.isGPWOpen = true
-                105 -> stockDate.isGPWOpen = true
+
             }
         }
-
-
         return stockDate.isGPWOpen
     }
 
