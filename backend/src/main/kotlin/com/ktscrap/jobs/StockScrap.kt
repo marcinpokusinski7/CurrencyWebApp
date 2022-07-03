@@ -1,4 +1,4 @@
-package com.ktscrap.Jobs
+package com.ktscrap.jobs
 
 import com.ktscrap.model.StockDate
 import com.ktscrap.model.StockGpw
@@ -14,7 +14,6 @@ import javax.persistence.NoResultException
 
 @Component
 class StockScrap {
-    private val session = dbConn.transaction().openSession()
     private val logger = LoggerFactory.getLogger(javaClass)
 
     /*   @PostConstruct
@@ -25,13 +24,14 @@ class StockScrap {
     }*/
     @PostConstruct
     private fun conn() {
-        val session = dbConn.transaction().openSession()
+        val saveObject = SaveObject()
+        val session = DbConn.transaction().openSession()
         val url = "https://www.bankier.pl/gielda/notowania/akcje"
         val filterOutput = "Obserwuj spółkę"
         val doc = Jsoup.connect("$url").get()
         val stockListContainer: ArrayList<StockGpw> = ArrayList()
         prepareDateRecord(session)
-        //TODO maybe isolate to another method
+        //TODO refactor isolate to another method
         for (row in doc.select(".sortTable:first-of-type tr")) {
             if (row.select("td:nth-of-type(1)").equals(String().isBlank())) {
                 continue
@@ -63,7 +63,7 @@ class StockScrap {
                 }
             }
         }
-        addStocksToDb(stockListContainer, session)
+        saveObject.addStocksToDb(stockListContainer, session)
         session.close()
     }
 
@@ -92,19 +92,10 @@ class StockScrap {
         return stockGpw
     }
 
-    private fun addStocksToDb(stockGpwCollection: ArrayList<StockGpw>, session: Session) {
-        if (stockGpwCollection.isNotEmpty().or(false)) {
-            session.use { session ->
-                for (stock in stockGpwCollection) {
-                    session.save(stock)
-                }
-            }
-        }
-    }
-
     //TODO add day of week, add if holiday and what holiday
     //TODO additionally check if try catch works properly after deleting records in db and inserting again
     private fun prepareDateRecord(session: Session) {
+        val saveObject = SaveObject()
         val getLastDate =
             "SELECT read_date FROM StockDate ORDER BY id DESC"
 
@@ -121,14 +112,14 @@ class StockScrap {
         try {
             queryResultDate = query.singleResult.toString()
             if (queryResultDate.isNotEmpty() && stockDate.read_date != queryResultDate) {
-                addDateToDb(stockDate, session)
+                saveObject.addDateToDb(stockDate, session)
             } else {
                 logger.info("Problem with retrieving data or date already exists")
             }
         } catch (e: NoResultException) {
             logger.info("Query result is empty, no records found")
             if (stockDate.read_date.isNotEmpty()) {
-                addDateToDb(stockDate, session)
+                saveObject.addDateToDb(stockDate, session)
             }
         }
     }
@@ -143,6 +134,7 @@ class StockScrap {
         return false
     }
 
+    //TODO add scrap to gpw
     //https://www.gpw.pl/szczegoly-sesji/#bez-sesji get dates from site, and create enums of month
     private fun checkIsGPWOpen(currDate: LocalDateTime, stockDate: StockDate): Boolean {
         if (checkIsWeekend(LocalDateTime.now())) {
@@ -156,13 +148,7 @@ class StockScrap {
         return stockDate.isGPWOpen
     }
 
-    private fun addDateToDb(stockDate: StockDate, session: Session) {
-        if (stockDate.read_date.isNotEmpty()) {
-            session.use { session ->
-                session.save(stockDate)
-            }
-        }
-    }
+
 
 
 }

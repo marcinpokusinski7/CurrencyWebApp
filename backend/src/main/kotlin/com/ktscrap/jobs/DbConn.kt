@@ -1,11 +1,9 @@
-package com.ktscrap.Jobs
+package com.ktscrap.jobs
 
 import org.hibernate.SessionFactory
 import org.hibernate.cfg.Configuration
-import org.springframework.stereotype.Component
-import javax.transaction.Transactional
 
-object dbConn {
+object DbConn {
     fun transaction(): SessionFactory {
         return Configuration()
             .configure("hibernate.cfg.xml")
