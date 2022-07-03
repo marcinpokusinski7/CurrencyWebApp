@@ -1,6 +1,5 @@
 package com.ktscrap.model
 
-import java.time.DayOfWeek
 import javax.persistence.*
 
 @Entity
@@ -9,19 +8,19 @@ open class StockDate(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", unique = true, nullable = false)
-    @JvmField open var id: Long = 0,
+    open var id: Long = 0,
 
     @Column(nullable = false)
-    @JvmField open var read_date: String = "",
+    open var read_date: String = "",
 
     @Column(nullable = false)
-    @JvmField open var dayOfWeek: DayOfWeek? = null,
+    open var day_of_week: String = "",
 
     @Column(nullable = false)
-    @JvmField open var isHoliday: Boolean = false,
+    open var isHoliday: Boolean = false,
 
     @Column(nullable = false)
-    @JvmField open var isGPWOpen: Boolean = true,
+    open var isGPWOpen: Boolean = true,
 
 
-)
+    )

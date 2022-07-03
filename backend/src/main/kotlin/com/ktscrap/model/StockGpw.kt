@@ -13,28 +13,28 @@ open class StockGpw(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "stock_id", unique = true, nullable = false)
-    @JvmField open var stock_id: Long = 0,
+    open var stock_id: Long = 0,
 
     @Column(nullable = false)
-    @JvmField open var stock_name: String = "",
+    open var stock_name: String = "",
 
     @Column(nullable = false)
-    @JvmField open var stock_rate: String = "",
+    open var stock_rate: String = "",
 
     @Column(nullable = false)
-    @JvmField open var stock_change: String = "",
+    open var stock_change: String = "",
 
     @Column(nullable = false)
-    @JvmField open var stock_min: String = "",
+    open var stock_min: String = "",
 
     @Column(nullable = false)
-    @JvmField open var stock_max: String = "",
+    open var stock_max: String = "",
 
     @Column(nullable = false)
-    @JvmField open var stock_volume: String = "",
+    open var stock_volume: String = "",
 
     @Column(nullable = false)
-    @JvmField open var stock_quantity: String = "",
+    open var stock_quantity: String = "",
 
     @ManyToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     @JoinColumn(name = "id")

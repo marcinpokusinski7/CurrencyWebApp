@@ -115,9 +115,9 @@ class StockScrap {
         val currentDate = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         stockDate.read_date = currentDate.format(formatter)
-        stockDate.dayOfWeek = currentDate.dayOfWeek //if error probably ccheck stockdate to string
+        stockDate.day_of_week = currentDate.dayOfWeek.toString() //if error probably ccheck stockdate to string
         stockDate.isHoliday = checkIsWeekend(currentDate)
-
+        //TODO refactor of method because is too big
         try {
             queryResultDate = query.singleResult.toString()
             if (queryResultDate.isNotEmpty() && stockDate.read_date != queryResultDate) {
@@ -135,8 +135,8 @@ class StockScrap {
 
     //TODO Check if enum with holidays is there
     private fun checkIsWeekend(currDate: LocalDateTime): Boolean {
-        if (currDate.dayOfWeek.toString() == "Sunday"
-            || currDate.dayOfWeek.toString() == "Saturday"
+        if (currDate.dayOfWeek.toString() == "SUNDAY"
+            || currDate.dayOfWeek.toString() == "SATURDAY"
         ) {
             return true
         }
@@ -145,9 +145,9 @@ class StockScrap {
 
     //https://www.gpw.pl/szczegoly-sesji/#bez-sesji get dates from site, and create enums of month
     private fun checkIsGPWOpen(currDate: LocalDateTime, stockDate: StockDate): Boolean {
-        if(checkIsWeekend(LocalDateTime.now())){
+        if (checkIsWeekend(LocalDateTime.now())) {
             stockDate.isGPWOpen = false
-        }else {//if gpw is not open then return gpw open false
+        } else {//if gpw is not open then return gpw open false
             when (currDate.dayOfYear) {
                 6 -> stockDate.isGPWOpen = true
 
